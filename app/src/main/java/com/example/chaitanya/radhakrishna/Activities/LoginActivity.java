@@ -135,6 +135,7 @@ public class LoginActivity extends AppCompatActivity {
                                         }
 
                                     } catch (JSONException e1) {
+                                        progressDialog.dismiss();
                                         e1.printStackTrace();
                                     }
                                 }

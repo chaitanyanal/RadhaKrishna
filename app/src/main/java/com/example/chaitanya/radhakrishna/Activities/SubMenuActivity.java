@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.chaitanya.radhakrishna.Adapter.AdapterSubMenu;
+import com.example.chaitanya.radhakrishna.DatabaseAdapters.DBAdapter;
+import com.example.chaitanya.radhakrishna.Model.MenuDetails;
 import com.example.chaitanya.radhakrishna.Model.SubMenuPojo;
 import com.example.chaitanya.radhakrishna.Model.SubMenuResponseBean;
 import com.example.chaitanya.radhakrishna.R;
@@ -28,19 +30,21 @@ import java.util.ArrayList;
 
 public class SubMenuActivity extends AppCompatActivity implements View.OnClickListener {
 
-    String ID="";
+    String ClickedItem="";
     SubMenuPojo subMenuPojo;
     Context context;
     SubMenuResponseBean bean;
-    ArrayList<SubMenuResponseBean> subMenuResponseBeanArrayList;
+   // ArrayList<SubMenuResponseBean> subMenuResponseBeanArrayList;
+    ArrayList<MenuDetails> list;
     RecyclerView recyclerView;
     AdapterSubMenu adapterSubMenu;
     RecyclerView.LayoutManager layoutManager;
     Button btnPrice, btnOrder;
     ProgressDialog progressDialog;
-    ArrayList<SubMenuResponseBean> finalListTemp;
+    ArrayList<MenuDetails> finalListTemp;
     int totalPrice=0;
     int minteger=1;
+    DBAdapter dbAdapter;
 
 
     @Override
@@ -48,6 +52,8 @@ public class SubMenuActivity extends AppCompatActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.submenu);
         context=this;
+        dbAdapter = new DBAdapter(context);
+
 
         recyclerView=findViewById(R.id.recyclersubmenu);
         btnOrder=findViewById(R.id.btn_order);
@@ -57,12 +63,17 @@ public class SubMenuActivity extends AppCompatActivity implements View.OnClickLi
         btnPrice.setOnClickListener(this);
 
 
-        subMenuResponseBeanArrayList= new ArrayList<>();
-        ID= getIntent().getStringExtra("ID");
-        subMenuPojo= new SubMenuPojo();
-        subMenuPojo.setId(ID);
+        list= new ArrayList<>();
+        ClickedItem= getIntent().getStringExtra("ClickedItem");
 
-        Gson gson= new Gson();
+        subMenuPojo= new SubMenuPojo();
+      //  subMenuPojo.setId(PID);
+        list= dbAdapter.getAllListOfAllSubItems(ClickedItem);
+
+      //  subMenuResponseBeanArrayList= d
+        setDataToRecyclerView(list);
+
+      /*  Gson gson= new Gson();
         String requestID="";
         requestID=gson.toJson(subMenuPojo);
         String url="http://radhakrishna.smarksystechnologies.com/api/get_sub_categories";
@@ -115,10 +126,10 @@ public class SubMenuActivity extends AppCompatActivity implements View.OnClickLi
                         }
 
                     }
-                });
+                });*/
     }
 
-    private void setDataToRecyclerView(ArrayList<SubMenuResponseBean> list)
+    private void setDataToRecyclerView(final ArrayList<MenuDetails> list)
     {
         layoutManager= new LinearLayoutManager(context);
         adapterSubMenu= new AdapterSubMenu(list, context);
@@ -127,10 +138,10 @@ public class SubMenuActivity extends AppCompatActivity implements View.OnClickLi
         adapterSubMenu.notifyDataSetChanged();
 
 
-        ArrayList<SubMenuResponseBean> listTemp;
+        ArrayList<MenuDetails> listTemp;
         listTemp= new ArrayList<>();
 
-        listTemp=subMenuResponseBeanArrayList;
+        listTemp=list;
 
         finalListTemp= new ArrayList<>();
 
@@ -139,13 +150,13 @@ public class SubMenuActivity extends AppCompatActivity implements View.OnClickLi
             public void checkedChage(int position, boolean b, int quantity) {
                 if(b)
                 {
-                    subMenuResponseBeanArrayList.get(position).setSelected(true);
+                    list.get(position).setIsSelected("true");
 
-                    SubMenuResponseBean bean1= subMenuResponseBeanArrayList.get(position);
+                    MenuDetails bean1= list.get(position);
                     finalListTemp.add(bean1);
                     if(finalListTemp.size()>0)
                     {
-                        if(bean1.isSelected()==true)
+                        if(bean1.getIsSelected().equals("true"))
                         {
                             totalPrice=totalPrice+(Integer.valueOf(bean1.getPrice())*Integer.valueOf(bean1.getQuantity()));
 
@@ -160,10 +171,10 @@ public class SubMenuActivity extends AppCompatActivity implements View.OnClickLi
                 }
                 else
                 {
-                    subMenuResponseBeanArrayList.get(position).setSelected(false);
-                    SubMenuResponseBean bean2=subMenuResponseBeanArrayList.get(position);
+                    list.get(position).setIsSelected("false");
+                    MenuDetails bean2=list.get(position);
                     finalListTemp.remove(bean2);
-                    if(bean2.isSelected()==false)
+                    if(bean2.getIsSelected().equals("false"))
                     {
                         totalPrice=totalPrice-(Integer.valueOf(bean2.getPrice())*Integer.valueOf(bean2.getQuantity()));
                         btnPrice.setText("PRICE:  "+String.valueOf(totalPrice)+" Rs.");

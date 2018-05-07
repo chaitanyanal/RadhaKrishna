@@ -3,7 +3,16 @@ package com.example.chaitanya.radhakrishna.Model;
 public class MenuDetails {
 
     String itemName,id,price,parentId, subItemName, quantity, total;
+    String isSelected;
 
+
+    public String getIsSelected() {
+        return isSelected;
+    }
+
+    public void setIsSelected(String isSelected) {
+        this.isSelected = isSelected;
+    }
 
     public String getSubItemName() {
         return subItemName;

@@ -11,6 +11,7 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.chaitanya.radhakrishna.Model.MenuDetails;
 import com.example.chaitanya.radhakrishna.Model.SubMenuResponseBean;
 import com.example.chaitanya.radhakrishna.R;
 
@@ -18,14 +19,14 @@ import java.util.ArrayList;
 
 public class AdapterSubMenu extends RecyclerView.Adapter<AdapterSubMenu.ViewHOlder> {
 
-    ArrayList<SubMenuResponseBean>subMenuResponseBeanArrayList ;
+    ArrayList<MenuDetails>list ;
     Context context;
     private onCheckedChangeListener mcheckListener;
     private onItemClickListener mListener;
     int minteger = 1;
 
-    public AdapterSubMenu(ArrayList<SubMenuResponseBean> subMenuResponseBeanArrayList, Context context) {
-        this.subMenuResponseBeanArrayList = subMenuResponseBeanArrayList;
+    public AdapterSubMenu(ArrayList<MenuDetails> list, Context context) {
+        this.list = list;
         this.context = context;
     }
 
@@ -63,12 +64,12 @@ public class AdapterSubMenu extends RecyclerView.Adapter<AdapterSubMenu.ViewHOld
 
     @Override
     public void onBindViewHolder(final ViewHOlder holder, int position) {
-        SubMenuResponseBean bean=subMenuResponseBeanArrayList.get(position);
+        MenuDetails bean=list.get(position);
 
-        holder.txtItemName.setText(bean.getItem_name());
+        holder.txtItemName.setText(bean.getItemName());
         holder.txtPrice.setText(bean.getPrice());
-        holder.checkBox.setChecked(bean.isSelected());
-        holder.checkBox.setTag(subMenuResponseBeanArrayList.get(position));
+        holder.checkBox.setChecked(Boolean.parseBoolean(bean.getIsSelected()));
+        holder.checkBox.setTag(list.get(position));
 
         /*holder.checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,7 +126,7 @@ public class AdapterSubMenu extends RecyclerView.Adapter<AdapterSubMenu.ViewHOld
 
     @Override
     public int getItemCount() {
-        return subMenuResponseBeanArrayList.size();
+        return list.size();
     }
 
     public class ViewHOlder extends RecyclerView.ViewHolder {

@@ -1,6 +1,7 @@
 package com.example.chaitanya.radhakrishna.Activities;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -47,31 +48,35 @@ public class MainActivity extends AppCompatActivity {
 
     HashMap<String, String> hashMap;
     ArrayList<HashMap<String, String>> hashList;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        context=this;
 
-        dbAdapter= new DBAdapter(this);
+        dbAdapter= new DBAdapter(context);
 
         recyclerView=findViewById(R.id.recyclerMain);
         recyclerView.setHasFixedSize(true);
         hashList= new ArrayList<>();
 
 
-        recyclerView.setLayoutManager(new GridLayoutManager(this,3));
+        recyclerView.setLayoutManager(new GridLayoutManager(context,3));
 
-        sendRequest();
+        sendRequest(context);
 
 
     }
 
-    private void sendRequest() {
-        progressDialog= new ProgressDialog(this);
+    private void sendRequest(final Context context) {
+        progressDialog= new ProgressDialog(context);
         progressDialog.setTitle("Please wait..");
         progressDialog.setCancelable(false);
         progressDialog.show();
+       // dbAdapter= new DBAdapter(context);
+        dbAdapter.deleteItemsTable();
 
         StringRequest obreq=new StringRequest(Method.POST, URL, new Response.Listener<String>() {
             @Override
@@ -81,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
 
                 menuDetails=new ArrayList<>();
                 try {
+
+
 
                     JSONObject jsonObject=new JSONObject(response);
                     progressDialog.dismiss();
@@ -103,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
                             menu.setParentId(jsonObject1.getString("parent_id"));
                             menu.setPrice(jsonObject1.getString("price"));
                             menu.setTotal("0");
+                            menu.setIsSelected("false");
                             menu.setQuantity("0");
 
                             if(jsonObject1.getString("parent_id").equalsIgnoreCase("1"))
@@ -264,14 +272,19 @@ public class MainActivity extends AppCompatActivity {
 
                    // Log.e("data",""+menuDetails.size());
 
+                    for(MenuDetails m:menuDetails)
+                    {
+                        dbAdapter.insertIntoItemsTable(m);
+                    }
 
-                    dbAdapter.insertIntoItemsTable(menuDetails);
+
                     
-                    adapterMenuModel=new AdapterMenuModel(MainActivity.this,hashList);
+                    adapterMenuModel=new AdapterMenuModel(context,hashList);
                     recyclerView.setAdapter(adapterMenuModel);
                     adapterMenuModel.notifyDataSetChanged();
 
                 } catch (JSONException e) {
+                    progressDialog.dismiss();
                     e.printStackTrace();
                 }
 

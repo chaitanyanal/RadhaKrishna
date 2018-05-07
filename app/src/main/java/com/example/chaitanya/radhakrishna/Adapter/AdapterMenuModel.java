@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.example.chaitanya.radhakrishna.Activities.Details;
 import com.example.chaitanya.radhakrishna.Activities.MainActivity;
 import com.example.chaitanya.radhakrishna.Activities.SubMenuActivity;
+import com.example.chaitanya.radhakrishna.DatabaseAdapters.DBAdapter;
 import com.example.chaitanya.radhakrishna.Model.MenuDetails;
 import com.example.chaitanya.radhakrishna.R;
 
@@ -28,10 +29,12 @@ public class AdapterMenuModel extends RecyclerView.Adapter<AdapterMenuModel.MyVi
     Context context;
     ArrayList<HashMap<String, String>> menuDetailsList;
     MainActivity mainActivity;
+    DBAdapter dbAdapter;
 
     public AdapterMenuModel(Context context, ArrayList<HashMap<String, String>> menuDetailsList) {
         this.context = context;
         this.menuDetailsList = menuDetailsList;
+        dbAdapter= new DBAdapter(context);
     }
 
     @Override
@@ -60,7 +63,9 @@ public class AdapterMenuModel extends RecyclerView.Adapter<AdapterMenuModel.MyVi
 
               //  Toast.makeText(context, ""+String.valueOf(itemPosition), Toast.LENGTH_SHORT).show();
                 Intent intent=new Intent(v.getContext(),SubMenuActivity.class);
-                intent.putExtra("ID",String.valueOf(itemPosition));
+               // intent.putExtra("ID",String.valueOf(itemPosition));
+                //String clickedItem=dbAdapter.getItemNameFromPos(menuDetailsList.get(position).get("ITEM"));
+                intent.putExtra("ClickedItem",menuDetailsList.get(position).get("ITEM"));
                 context.startActivity(intent);
 
 
